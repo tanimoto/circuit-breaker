@@ -2,6 +2,10 @@
 
 ## Introduction
 
+A Haskell implementation of the
+[circuit breaker](https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern)
+design pattern.
+
 ## Development
 
     $ stack setup
@@ -14,7 +18,3 @@
 ## Running Benchmarks
 
     $ stack bench
-
-## Authors
-
-- Paulo Tanimoto <ptanimoto@gmail.com>

@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 -------------------------------------------------------------------------------
 
 module Main where
@@ -8,19 +6,28 @@ module Main where
 
 import           CircuitBreaker
 
-import           Criterion.Main              (Benchmark, bench, bgroup, nf)
-import qualified Criterion.Main              as Criterion
+import           Control.Concurrent (threadDelay)
+import           Criterion.Main (Benchmark, bench, bgroup)
+import qualified Criterion.Main as Criterion
 
 -------------------------------------------------------------------------------
 
 main :: IO ()
-main = Criterion.defaultMain benchmarks
+main = do
+  circuit <- newCircuitBreaker 10 60
+  Criterion.defaultMain (benchmarks circuit)
 
 -------------------------------------------------------------------------------
 
-benchmarks :: [Benchmark]
-benchmarks =
+benchmarks :: CircuitBreaker -> [Benchmark]
+benchmarks circuit =
   [ bgroup "Benchmarks"
-    [ bench "succ 1" $ nf succ (1 :: Int)
+    [ bench "without circuit breaker" $
+        Criterion.nfIO delay
+
+    , bench "with circuit breaker" $
+        Criterion.nfIO (withCircuitBreaker circuit delay)
     ]
   ]
+  where
+  delay = threadDelay 100
